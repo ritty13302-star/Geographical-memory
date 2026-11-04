@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#5b5ce2">
 <title>世界地理大冒險｜國旗・地圖・首都測驗</title>
-<script src="https://cdn.jsdelivr.net/npm/d3-geo@3"></script>
-<script src="https://cdn.jsdelivr.net/npm/d3-selection@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo@3/dist/d3-geo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-selection@3/dist/d3-selection.min.js"></script>
 <style>
 :root{--ink:#20213b;--muted:#73758f;--purple:#5b5ce2;--pink:#ff6fae;--yellow:#ffd166;--mint:#67d9bd;--paper:#f7f7ff;--line:#e8e8f4;--white:#fff}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 5%,#e9e8ff 0,transparent 30%),radial-gradient(circle at 90% 20%,#ffe6f1 0,transparent 28%),var(--paper);font-family:ui-rounded,"Noto Sans TC","PingFang TC",system-ui,sans-serif;color:var(--ink);min-height:100vh}
@@ -75,7 +75,7 @@ document.querySelectorAll('.mode').forEach(b=>b.addEventListener('click',()=>{do
 function bindChips(id, setter){document.querySelectorAll('#'+id+' .chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#'+id+' .chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');setter(b.dataset.value)}))}
 bindChips('difficulty',v=>difficulty=v);bindChips('count',v=>count=v);
 const shuffle=a=>{let x=[...a];for(let i=x.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}return x};
-async function startGame(){const startBtn=$('start');startBtn.disabled=true;try{if(selectedMode==='country'||selectedMode==='mixed')await loadWorldMap();const supported=COUNTRIES.filter(c=>mapFeatureByCode.has(c.code));const pool=shuffle(selectedMode==='country'?supported:COUNTRIES);const n=count==='all'?pool.length:Math.min(+count,pool.length);deck=pool.slice(0,n).map(c=>({...c,type:selectedMode==='mixed'?shuffle(['flag','capital','country'])[0]:selectedMode}));if(selectedMode==='mixed')deck=deck.map(c=>c.type==='country'&&!mapFeatureByCode.has(c.code)?{...c,type:'flag'}:c);index=0;score=0;streak=0;correct=0;wrong=[];startAt=Date.now();$('home').classList.add('hidden');$('results').classList.add('hidden');$('playing').classList.remove('hidden');$('modeLabel').textContent=modes[selectedMode];clearInterval(timerId);timerId=setInterval(updateTimer,1000);renderQuestion()}catch(e){alert('地圖載入失敗，請確認網路連線後再試一次。');}finally{startBtn.disabled=false}}
+async function startGame(){const startBtn=$('start');startBtn.disabled=true;try{if(selectedMode==='country'||selectedMode==='mixed')await loadWorldMap();const supported=COUNTRIES.filter(c=>mapFeatureByCode.has(c.code));const pool=shuffle(selectedMode==='country'?supported:COUNTRIES);const n=count==='all'?pool.length:Math.min(+count,pool.length);deck=pool.slice(0,n).map(c=>({...c,type:selectedMode==='mixed'?shuffle(['flag','capital','country'])[0]:selectedMode}));if(selectedMode==='mixed')deck=deck.map(c=>c.type==='country'&&!mapFeatureByCode.has(c.code)?{...c,type:'flag'}:c);index=0;score=0;streak=0;correct=0;wrong=[];startAt=Date.now();$('home').classList.add('hidden');$('results').classList.add('hidden');$('playing').classList.remove('hidden');$('modeLabel').textContent=modes[selectedMode];clearInterval(timerId);timerId=setInterval(updateTimer,1000);renderQuestion()}catch(e){console.error('開始測驗失敗：',e);alert('地圖載入失敗：'+(e&&e.message?e.message:'未知錯誤')+'。請確認網路連線後再試一次。');}finally{startBtn.disabled=false}}
 function updateTimer(){$('timer').textContent='⏱ '+formatTime(Math.floor((Date.now()-startAt)/1000))}
 function formatTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
 function makeQuestion(c){let type=c.type, prompt='',sub='',answer='',label='請選出正確答案';
